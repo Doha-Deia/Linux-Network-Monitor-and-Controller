@@ -2,6 +2,7 @@
 
 #include <algorithm>
 #include <iostream>
+
 using namespace std;
 
 void Aggregator::update(const ResolvedPacket& packet) {
@@ -99,4 +100,39 @@ void Aggregator::print_summary() const {
     }
 
     cerr << "===============================================\n";
+}
+
+AggregationSnapshot Aggregator::get_snapshot() const {
+    AggregationSnapshot snap;
+
+    lock_guard<mutex> lock(mtx_);
+
+    for (const auto& [pid, stat] : process_stats_) {
+        snap.top_processes.push_back(stat);
+    }
+
+    for (const auto& [user, stat] : user_stats_) {
+        snap.top_users.push_back(stat);
+    }
+
+    for (const auto& [proto, stat] : protocol_stats_) {
+        snap.protocol_stats.push_back(stat);
+    }
+
+    sort(snap.top_processes.begin(), snap.top_processes.end(),
+              [](const ProcAgg& a, const ProcAgg& b) {
+                  return a.bytes > b.bytes;
+              });
+
+    sort(snap.top_users.begin(), snap.top_users.end(),
+              [](const UserAgg& a, const UserAgg& b) {
+                  return a.bytes > b.bytes;
+              });
+
+    sort(snap.protocol_stats.begin(), snap.protocol_stats.end(),
+              [](const ProtoAgg& a, const ProtoAgg& b) {
+                  return a.bytes > b.bytes;
+              });
+
+    return snap;
 }

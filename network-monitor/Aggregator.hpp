@@ -7,42 +7,34 @@
 #include <mutex>
 #include <cstdint>
 
-struct ResolvedPacket {
-    std::string ts;
-    uint64_t length{0};
+using namespace std;
 
-    std::string src_ip;
-    uint16_t src_port{0};
-
-    std::string dst_ip;
-    uint16_t dst_port{0};
-
-    std::string protocol{"other"};
-
-    unsigned long inode{0};
-    int pid{-1};
-    std::string process_name{"unknown"};
-    std::string user{"unknown"};
-};
+#include "PacketTypes.hpp"
 
 struct ProcAgg {
     int pid{-1};
-    std::string process_name{"unknown"};
-    std::string user{"unknown"};
+    string process_name{"unknown"};
+    string user{"unknown"};
     uint64_t bytes{0};
     uint64_t packets{0};
 };
 
 struct UserAgg {
-    std::string user{"unknown"};
+    string user{"unknown"};
     uint64_t bytes{0};
     uint64_t packets{0};
 };
 
 struct ProtoAgg {
-    std::string protocol{"other"};
+    string protocol{"other"};
     uint64_t bytes{0};
     uint64_t packets{0};
+};
+
+struct AggregationSnapshot {
+    vector<ProcAgg> top_processes;
+    vector<UserAgg> top_users;
+    vector<ProtoAgg> protocol_stats;
 };
 
 class Aggregator {
@@ -50,12 +42,13 @@ public:
     void update(const ResolvedPacket& packet);
     void print_summary() const;
     bool has_data() const;
+    AggregationSnapshot get_snapshot() const;
 
 private:
-    mutable std::mutex mtx_;
-    std::map<int, ProcAgg> process_stats_;
-    std::map<std::string, UserAgg> user_stats_;
-    std::map<std::string, ProtoAgg> protocol_stats_;
+    mutable mutex mtx_;
+    map<int, ProcAgg> process_stats_;
+    map<string, UserAgg> user_stats_;
+    map<string, ProtoAgg> protocol_stats_;
 };
 
 #endif
