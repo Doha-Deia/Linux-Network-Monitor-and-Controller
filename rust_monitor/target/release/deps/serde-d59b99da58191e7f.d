@@ -1,0 +1,14 @@
+/media/sf_VM_Shared/VM_Shared/OS Project/rust_monitor/target/release/deps/libserde-d59b99da58191e7f.rmeta: /home/sondos/.cargo/registry/src/index.crates.io-6f17d22bba15001f/serde-1.0.228/src/lib.rs /home/sondos/.cargo/registry/src/index.crates.io-6f17d22bba15001f/serde-1.0.228/src/integer128.rs /home/sondos/.cargo/registry/src/index.crates.io-6f17d22bba15001f/serde-1.0.228/src/private/mod.rs /home/sondos/.cargo/registry/src/index.crates.io-6f17d22bba15001f/serde-1.0.228/src/private/de.rs /home/sondos/.cargo/registry/src/index.crates.io-6f17d22bba15001f/serde-1.0.228/src/private/ser.rs /media/sf_VM_Shared/VM_Shared/OS\ Project/rust_monitor/target/release/build/serde-c6628d9d39ed7715/out/private.rs
+
+/media/sf_VM_Shared/VM_Shared/OS Project/rust_monitor/target/release/deps/libserde-d59b99da58191e7f.rlib: /home/sondos/.cargo/registry/src/index.crates.io-6f17d22bba15001f/serde-1.0.228/src/lib.rs /home/sondos/.cargo/registry/src/index.crates.io-6f17d22bba15001f/serde-1.0.228/src/integer128.rs /home/sondos/.cargo/registry/src/index.crates.io-6f17d22bba15001f/serde-1.0.228/src/private/mod.rs /home/sondos/.cargo/registry/src/index.crates.io-6f17d22bba15001f/serde-1.0.228/src/private/de.rs /home/sondos/.cargo/registry/src/index.crates.io-6f17d22bba15001f/serde-1.0.228/src/private/ser.rs /media/sf_VM_Shared/VM_Shared/OS\ Project/rust_monitor/target/release/build/serde-c6628d9d39ed7715/out/private.rs
+
+/media/sf_VM_Shared/VM_Shared/OS Project/rust_monitor/target/release/deps/serde-d59b99da58191e7f.d: /home/sondos/.cargo/registry/src/index.crates.io-6f17d22bba15001f/serde-1.0.228/src/lib.rs /home/sondos/.cargo/registry/src/index.crates.io-6f17d22bba15001f/serde-1.0.228/src/integer128.rs /home/sondos/.cargo/registry/src/index.crates.io-6f17d22bba15001f/serde-1.0.228/src/private/mod.rs /home/sondos/.cargo/registry/src/index.crates.io-6f17d22bba15001f/serde-1.0.228/src/private/de.rs /home/sondos/.cargo/registry/src/index.crates.io-6f17d22bba15001f/serde-1.0.228/src/private/ser.rs /media/sf_VM_Shared/VM_Shared/OS\ Project/rust_monitor/target/release/build/serde-c6628d9d39ed7715/out/private.rs
+
+/home/sondos/.cargo/registry/src/index.crates.io-6f17d22bba15001f/serde-1.0.228/src/lib.rs:
+/home/sondos/.cargo/registry/src/index.crates.io-6f17d22bba15001f/serde-1.0.228/src/integer128.rs:
+/home/sondos/.cargo/registry/src/index.crates.io-6f17d22bba15001f/serde-1.0.228/src/private/mod.rs:
+/home/sondos/.cargo/registry/src/index.crates.io-6f17d22bba15001f/serde-1.0.228/src/private/de.rs:
+/home/sondos/.cargo/registry/src/index.crates.io-6f17d22bba15001f/serde-1.0.228/src/private/ser.rs:
+/media/sf_VM_Shared/VM_Shared/OS\ Project/rust_monitor/target/release/build/serde-c6628d9d39ed7715/out/private.rs:
+
+# env-dep:OUT_DIR=/media/sf_VM_Shared/VM_Shared/OS Project/rust_monitor/target/release/build/serde-c6628d9d39ed7715/out

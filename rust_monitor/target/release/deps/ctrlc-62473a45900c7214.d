@@ -1,0 +1,11 @@
+/media/sf_VM_Shared/VM_Shared/OS Project/rust_monitor/target/release/deps/libctrlc-62473a45900c7214.rmeta: /home/sondos/.cargo/registry/src/index.crates.io-6f17d22bba15001f/ctrlc-3.5.2/src/lib.rs /home/sondos/.cargo/registry/src/index.crates.io-6f17d22bba15001f/ctrlc-3.5.2/src/error.rs /home/sondos/.cargo/registry/src/index.crates.io-6f17d22bba15001f/ctrlc-3.5.2/src/platform/mod.rs /home/sondos/.cargo/registry/src/index.crates.io-6f17d22bba15001f/ctrlc-3.5.2/src/platform/unix/mod.rs /home/sondos/.cargo/registry/src/index.crates.io-6f17d22bba15001f/ctrlc-3.5.2/src/signal.rs
+
+/media/sf_VM_Shared/VM_Shared/OS Project/rust_monitor/target/release/deps/libctrlc-62473a45900c7214.rlib: /home/sondos/.cargo/registry/src/index.crates.io-6f17d22bba15001f/ctrlc-3.5.2/src/lib.rs /home/sondos/.cargo/registry/src/index.crates.io-6f17d22bba15001f/ctrlc-3.5.2/src/error.rs /home/sondos/.cargo/registry/src/index.crates.io-6f17d22bba15001f/ctrlc-3.5.2/src/platform/mod.rs /home/sondos/.cargo/registry/src/index.crates.io-6f17d22bba15001f/ctrlc-3.5.2/src/platform/unix/mod.rs /home/sondos/.cargo/registry/src/index.crates.io-6f17d22bba15001f/ctrlc-3.5.2/src/signal.rs
+
+/media/sf_VM_Shared/VM_Shared/OS Project/rust_monitor/target/release/deps/ctrlc-62473a45900c7214.d: /home/sondos/.cargo/registry/src/index.crates.io-6f17d22bba15001f/ctrlc-3.5.2/src/lib.rs /home/sondos/.cargo/registry/src/index.crates.io-6f17d22bba15001f/ctrlc-3.5.2/src/error.rs /home/sondos/.cargo/registry/src/index.crates.io-6f17d22bba15001f/ctrlc-3.5.2/src/platform/mod.rs /home/sondos/.cargo/registry/src/index.crates.io-6f17d22bba15001f/ctrlc-3.5.2/src/platform/unix/mod.rs /home/sondos/.cargo/registry/src/index.crates.io-6f17d22bba15001f/ctrlc-3.5.2/src/signal.rs
+
+/home/sondos/.cargo/registry/src/index.crates.io-6f17d22bba15001f/ctrlc-3.5.2/src/lib.rs:
+/home/sondos/.cargo/registry/src/index.crates.io-6f17d22bba15001f/ctrlc-3.5.2/src/error.rs:
+/home/sondos/.cargo/registry/src/index.crates.io-6f17d22bba15001f/ctrlc-3.5.2/src/platform/mod.rs:
+/home/sondos/.cargo/registry/src/index.crates.io-6f17d22bba15001f/ctrlc-3.5.2/src/platform/unix/mod.rs:
+/home/sondos/.cargo/registry/src/index.crates.io-6f17d22bba15001f/ctrlc-3.5.2/src/signal.rs:
