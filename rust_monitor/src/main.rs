@@ -10,10 +10,13 @@ use correlator::Correlator;
 use packet_capture::PacketCapture;
 
 fn main() -> Result<(), Box<dyn std::error::Error>> {
+    // Flag starts as TRUE (running)
     let stop_flag = Arc::new(AtomicBool::new(true));
     let signal_flag = Arc::clone(&stop_flag);
 
     ctrlc::set_handler(move || {
+        // When Ctrl+C is hit, we set it to FALSE
+        eprintln!("\n[!] Interrupt received, preparing summary...");
         signal_flag.store(false, Ordering::SeqCst);
     })
     .expect("Error setting Ctrl-C handler");
@@ -21,8 +24,9 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
     let mut aggregator = Aggregator::new();
     let mut correlator = Correlator::new();
     let mut capture = PacketCapture::new(Arc::clone(&stop_flag));
-    let mut packet_count: u64 = 0;
 
+    // This will now return as soon as the flag becomes false 
+    // thanks to non-blocking mode in packet_capture.rs
     let result = capture.start(|packet| {
         let resolved = correlator.resolve(&packet);
         aggregator.update(&resolved);
@@ -34,8 +38,11 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
         eprintln!("capture error: {err}");
     }
 
+    // This block now executes immediately after the loop breaks
     if aggregator.has_data() {
         aggregator.print_summary();
+    } else {
+        eprintln!("No data captured.");
     }
 
     Ok(())

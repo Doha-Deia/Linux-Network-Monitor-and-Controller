@@ -31,6 +31,10 @@ impl PacketCapture {
             .promisc(true)
             .timeout(100)
             .open()?;
+        
+        // Re-assign cap because setnonblock() moves ownership
+        cap = cap.setnonblock()?; 
+
         cap.filter("ip", true)?;
 
         eprintln!("Listening for packets (Ctrl-C to stop)...");
@@ -44,15 +48,27 @@ impl PacketCapture {
 
             match packet_res {
                 Ok(packet) => {
+                    // Re-check flag immediately after waking up to avoid 
+                    // processing a packet during the shutdown sequence.
                     if !self.running.load(Ordering::SeqCst) {
-                        break; // stop immediately, don't process extra packet
+                        break; 
                     }
                     
-                    if let Some(ev) = Self::parse_packet(packet.data, packet.header.len as u64, packet.header.ts.tv_sec, packet.header.ts.tv_usec) {
+                    if let Some(ev) = Self::parse_packet(
+                        packet.data, 
+                        packet.header.len as u64, 
+                        packet.header.ts.tv_sec, 
+                        packet.header.ts.tv_usec
+                    ) {
                         callback(ev);
                     }
                 }
-                Err(pcap::Error::TimeoutExpired) => continue,
+                // In non-blocking mode, this error is returned when the buffer is empty.
+                Err(pcap::Error::TimeoutExpired) => {
+                    // Brief sleep to yield to the OS and save CPU cycles.
+                    std::thread::sleep(std::time::Duration::from_millis(10));
+                    continue;
+                }
                 Err(err) => return Err(Box::new(err)),
             }
         }
