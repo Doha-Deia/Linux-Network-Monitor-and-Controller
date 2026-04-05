@@ -14,9 +14,51 @@
 #include <map>
 #include <unistd.h>
 #include <nlohmann/json.hpp>
+#include <tuple>
+#include "Aggregator.hpp"
+#include <csignal>
 
 using json = nlohmann::json;
 using namespace std;
+
+pcap_t* g_handle = nullptr;
+
+Aggregator g_aggregator;
+
+struct FlowKey {
+    string ip1;
+    uint16_t port1{};
+    string ip2;
+    uint16_t port2{};
+    uint8_t proto{};
+
+    bool operator<(const FlowKey& other) const {
+        return tie(ip1, port1, ip2, port2, proto) <
+               tie(other.ip1, other.port1, other.ip2, other.port2, other.proto);
+    }
+};
+
+struct FlowOwner {
+    unsigned long inode{};
+    int pid{-1};
+    uid_t uid{};
+    string user{"unknown"};
+    string process_name{"unknown"};
+    time_t last_seen{};
+};
+
+map<FlowKey, FlowOwner> flow_cache;
+
+FlowKey make_flow_key(const string& src_ip, uint16_t src_port,
+                      const string& dst_ip, uint16_t dst_port,
+                      uint8_t proto) {
+    pair<string, uint16_t> a = {src_ip, src_port};
+    pair<string, uint16_t> b = {dst_ip, dst_port};
+
+    if (b < a) swap(a, b);
+
+    return FlowKey{a.first, a.second, b.first, b.second, proto};
+}
 
 string get_username(uid_t uid) {
     struct passwd* pw = getpwuid(uid);
@@ -94,11 +136,13 @@ int find_pid_by_inode(unsigned long inode) {
     return -1;
 }
 
-struct SockKey {
+struct SockInfo {
     string   local_ip;
-    uint16_t local_port;
+    uint16_t local_port{};
     string   remote_ip;
-    uint16_t remote_port;
+    uint16_t remote_port{};
+    uid_t    uid{};
+    unsigned long inode{};
 };
 
 static string hex_to_ip(const string& hex8) {
@@ -111,22 +155,30 @@ static string hex_to_ip(const string& hex8) {
     return string(buf);
 }
 
-map<unsigned long, SockKey> parse_proc_net(const string& path) {
-    map<unsigned long, SockKey> result;
+map<unsigned long, SockInfo> parse_proc_net(const string& path) {
+    map<unsigned long, SockInfo> result;
     ifstream f(path);
     if (!f.is_open()) return result;
+
     string line;
     getline(f, line); // skip header
+
     while (getline(f, line)) {
         istringstream iss(line);
-        string sl, local_hex, rem_hex, st, tx_rx, tr_tm, retrnsmt, timeout_str;
-        unsigned int uid_val;
-        unsigned long inode;
+
+        string sl, local_hex, rem_hex, st, tx_rx, tr_tm, retrnsmt;
+        string timeout_str, more;
+        unsigned int uid_val = 0;
+        unsigned long inode = 0;
+
         if (!(iss >> sl >> local_hex >> rem_hex >> st
-            >> tx_rx >> tr_tm >> retrnsmt
-            >> uid_val >> timeout_str >> inode))
+                  >> tx_rx >> tr_tm >> retrnsmt
+                  >> uid_val >> timeout_str >> inode)) {
             continue;
+        }
+
         if (inode == 0) continue;
+
         auto split_addr = [](const string& s, string& ip, uint16_t& port) {
             size_t c = s.find(':');
             if (c == string::npos) return;
@@ -134,17 +186,33 @@ map<unsigned long, SockKey> parse_proc_net(const string& path) {
             unsigned int p = 0;
             sscanf(s.substr(c + 1).c_str(), "%X", &p);
             port = static_cast<uint16_t>(p);
-            };
-        SockKey key;
-        split_addr(local_hex, key.local_ip, key.local_port);
-        split_addr(rem_hex, key.remote_ip, key.remote_port);
-        result[inode] = key;
+        };
+
+        SockInfo info;
+        split_addr(local_hex, info.local_ip, info.local_port);
+        split_addr(rem_hex, info.remote_ip, info.remote_port);
+        info.uid = static_cast<uid_t>(uid_val);
+        info.inode = inode;
+
+        result[inode] = info;
     }
+
     return result;
 }
 
+void cleanup_flow_cache(int ttl_seconds = 10) {
+    time_t now = time(nullptr);
+    for (auto it = flow_cache.begin(); it != flow_cache.end(); ) {
+        if (now - it->second.last_seen > ttl_seconds) {
+            it = flow_cache.erase(it);
+        } else {
+            ++it;
+        }
+    }
+}
+
 static unsigned long find_inode(
-    const map<unsigned long, SockKey>& sock_map,
+    const map<unsigned long, SockInfo>& sock_map,
     const string& src_ip, uint16_t src_port,
     const string& dst_ip, uint16_t dst_port)
 {
@@ -152,9 +220,12 @@ static unsigned long find_inode(
         if (sk.local_ip == src_ip && sk.local_port == src_port &&
             sk.remote_ip == dst_ip && sk.remote_port == dst_port)
             return inode;
+
         if (sk.local_ip == dst_ip && sk.local_port == dst_port &&
             sk.remote_ip == src_ip && sk.remote_port == src_port)
             return inode;
+
+        // fallback for listening or wildcard sockets
         if (sk.local_ip == "0.0.0.0") {
             if (sk.local_port == src_port) return inode;
             if (sk.local_port == dst_port) return inode;
@@ -198,22 +269,61 @@ void packet_handler(u_char* /*args*/,
     auto tcp_map = parse_proc_net("/proc/net/tcp");
     auto udp_map = parse_proc_net("/proc/net/udp");
 
+    const auto& sock_map = (proto == IPPROTO_TCP) ? tcp_map : udp_map;
+
+    FlowKey flow_key = make_flow_key(src_ip, src_port, dst_ip, dst_port, proto);
+
     unsigned long inode = 0;
-    if (proto == IPPROTO_TCP)
-        inode = find_inode(tcp_map, src_ip, src_port, dst_ip, dst_port);
-    else if (proto == IPPROTO_UDP)
-        inode = find_inode(udp_map, src_ip, src_port, dst_ip, dst_port);
-
-    int    pid = -1;
+    int pid = -1;
+    uid_t uid = static_cast<uid_t>(-1);
     string user = "unknown";
-    string process_name = "unknown";   // full name from cmdline
+    string process_name = "unknown";
 
+    // 1) Try exact live lookup first
+    if (proto == IPPROTO_TCP || proto == IPPROTO_UDP) {
+        inode = find_inode(sock_map, src_ip, src_port, dst_ip, dst_port);
+    }
+
+    // 2) If inode found, resolve PID and user
     if (inode != 0) {
+        auto it = sock_map.find(inode);
+        if (it != sock_map.end()) {
+            uid = it->second.uid;
+            user = get_username(uid);   // fallback user from /proc/net/*
+        }
+
         pid = find_pid_by_inode(inode);
         if (pid > 0) {
-            user = get_user_for_pid(pid);
-            process_name = get_process_name(pid);  // full name
+            user = get_user_for_pid(pid);        // better if available
+            process_name = get_process_name(pid);
         }
+
+        // cache successful or partial result
+        flow_cache[flow_key] = FlowOwner{
+            inode,
+            pid,
+            uid,
+            user,
+            process_name,
+            time(nullptr)
+        };
+    }
+    // 3) If live lookup failed, try cache
+    else {
+        auto cit = flow_cache.find(flow_key);
+        if (cit != flow_cache.end()) {
+            inode = cit->second.inode;
+            pid = cit->second.pid;
+            uid = cit->second.uid;
+            user = cit->second.user;
+            process_name = cit->second.process_name;
+            cit->second.last_seen = time(nullptr);
+        }
+    }
+
+    static int packet_count = 0;
+    if (++packet_count % 100 == 0) {
+        cleanup_flow_cache();
     }
 
     // Human readable timestamp
@@ -226,21 +336,42 @@ void packet_handler(u_char* /*args*/,
     if (proto == IPPROTO_TCP) proto_name = "TCP";
     else if (proto == IPPROTO_UDP) proto_name = "UDP";
 
+    ResolvedPacket rp;
+    rp.ts = string(ts_buf);
+    rp.length = header->len;
+    rp.src_ip = src_ip;
+    rp.src_port = src_port;
+    rp.dst_ip = dst_ip;
+    rp.dst_port = dst_port;
+    rp.protocol = proto_name;
+    rp.inode = inode;
+    rp.pid = pid;
+    rp.process_name = process_name;
+    rp.user = user;
+
+    g_aggregator.update(rp);
+
     json j;
-    j["ts"] = string(ts_buf);
-    j["length"] = header->len;
-    j["src_ip"] = src_ip;
-    j["src_port"] = src_port;
-    j["dst_ip"] = dst_ip;
-    j["dst_port"] = dst_port;
-    j["protocol"] = proto_name;
-    j["inode"] = static_cast<unsigned long long>(inode);
-    j["pid"] = pid;
-    j["process_name"] = process_name;   // full process name
-    j["user"] = user;
+    j["ts"] = rp.ts;
+    j["length"] = rp.length;
+    j["src_ip"] = rp.src_ip;
+    j["src_port"] = rp.src_port;
+    j["dst_ip"] = rp.dst_ip;
+    j["dst_port"] = rp.dst_port;
+    j["protocol"] = rp.protocol;
+    j["inode"] = static_cast<unsigned long long>(rp.inode);
+    j["pid"] = rp.pid;
+    j["process_name"] = rp.process_name;
+    j["user"] = rp.user;
 
     cout << j.dump() << "\n";
     cout.flush();
+}
+
+void handle_sigint(int) {
+    if (g_handle) {
+        pcap_breakloop(g_handle);
+    }
 }
 
 int main() {
@@ -261,6 +392,9 @@ int main() {
     cerr << "Using device: " << device->name << "\n";
 
     pcap_t* handle = pcap_open_live(device->name, 65535, 1, 100, errbuf);
+    g_handle = handle;
+    signal(SIGINT, handle_sigint);
+
     if (!handle) {
         cerr << "pcap_open_live: " << errbuf << "\n";
         pcap_freealldevs(alldevs);
@@ -274,6 +408,10 @@ int main() {
     cerr << "Listening for packets (Ctrl-C to stop)...\n";
 
     pcap_loop(handle, 0, packet_handler, nullptr);
+
+    if (g_aggregator.has_data()) {
+        g_aggregator.print_summary();
+    }
 
     pcap_close(handle);
     pcap_freealldevs(alldevs);
