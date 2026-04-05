@@ -49,7 +49,7 @@ bool PacketCapture::start(const PacketCallback& callback) {
     }
 
     struct bpf_program fp {};
-    if (pcap_compile(handle_, &fp, "ip and (tcp or udp)", 1, PCAP_NETMASK_UNKNOWN) == 0) {
+    if (pcap_compile(handle_, &fp, "ip", 1, PCAP_NETMASK_UNKNOWN) == 0) {
         pcap_setfilter(handle_, &fp);
         pcap_freecode(&fp);
     }

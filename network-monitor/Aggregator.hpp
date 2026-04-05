@@ -31,18 +31,11 @@ struct ProtoAgg {
     uint64_t packets{0};
 };
 
-struct AggregationSnapshot {
-    vector<ProcAgg> top_processes;
-    vector<UserAgg> top_users;
-    vector<ProtoAgg> protocol_stats;
-};
-
 class Aggregator {
 public:
     void update(const ResolvedPacket& packet);
     void print_summary() const;
     bool has_data() const;
-    AggregationSnapshot get_snapshot() const;
 
 private:
     mutable mutex mtx_;

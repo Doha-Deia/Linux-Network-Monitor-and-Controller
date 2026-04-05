@@ -5,7 +5,6 @@
 #include "PacketCapture.hpp"
 #include "Correlator.hpp"
 #include "Aggregator.hpp"
-#include "ConsolePresentation.hpp"
 
 using json = nlohmann::json;
 
@@ -51,9 +50,7 @@ int main() {
     }
 
     if (g_aggregator.has_data()) {
-        AggregationSnapshot snap = g_aggregator.get_snapshot();
-        ConsolePresentation presenter;
-        presenter.render(snap);
+        g_aggregator.print_summary();
     }
 
     return 0;
