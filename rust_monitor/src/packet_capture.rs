@@ -29,30 +29,28 @@ impl PacketCapture {
 
         let mut cap = Capture::from_device(device)?
             .promisc(true)
-            .timeout(100)
+            .timeout(100) 
             .open()?;
         
-        // Re-assign cap because setnonblock() moves ownership
+        // Non-blocking mode is what makes Ctrl+C instant
         cap = cap.setnonblock()?; 
 
         cap.filter("ip", true)?;
-
-        eprintln!("Listening for packets (Ctrl-C to stop)...");
         self.cap = Some(cap);
+
+        // --- The message is here ---
+        eprintln!("Listening for packets (Ctrl-C to stop)...");
 
         while self.running.load(Ordering::SeqCst) {
             let packet_res = {
-                let cap = self.cap.as_mut().expect("capture should be initialized");
-                cap.next_packet()
+                let cap_ref = self.cap.as_mut().expect("capture should be initialized");
+                cap_ref.next_packet()
             };
 
             match packet_res {
                 Ok(packet) => {
-                    // Re-check flag immediately after waking up to avoid 
-                    // processing a packet during the shutdown sequence.
-                    if !self.running.load(Ordering::SeqCst) {
-                        break; 
-                    }
+                    // Safety check to exit immediately if Ctrl+C was pressed
+                    if !self.running.load(Ordering::SeqCst) { break; }
                     
                     if let Some(ev) = Self::parse_packet(
                         packet.data, 
@@ -63,16 +61,15 @@ impl PacketCapture {
                         callback(ev);
                     }
                 }
-                // In non-blocking mode, this error is returned when the buffer is empty.
                 Err(pcap::Error::TimeoutExpired) => {
-                    // Brief sleep to yield to the OS and save CPU cycles.
+                    // If no packet, sleep 10ms then check 'running' flag again
                     std::thread::sleep(std::time::Duration::from_millis(10));
                     continue;
                 }
                 Err(err) => return Err(Box::new(err)),
             }
         }
-
+        
         Ok(())
     }
 
