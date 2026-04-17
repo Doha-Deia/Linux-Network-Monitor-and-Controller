@@ -1,22 +1,62 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-  <title>Network Monitor</title>
-  <link rel="stylesheet" href="style.css">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Network Monitor Dashboard</title>
+
+    <link rel="stylesheet" href="style.css">
+
+    <!-- Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
+
 <body>
 
-<h1>Network Monitor Dashboard</h1>
+    <h1>Network Monitor Dashboard</h1>
 
-<h2>Top Processes</h2>
-<table id="processes"></table>
+    <div class="dashboard">
 
-<h2>Top Users</h2>
-<table id="users"></table>
+        <!-- Processes -->
+        <div class="card">
+            <h2>Processes</h2>
+            <canvas id="processChart"></canvas>
+            <div id="processTop3" class="top3"></div>
+        </div>
 
-<h2>Protocols</h2>
-<table id="protocols"></table>
+        <!-- Users -->
+        <div class="card">
+            <h2>Users</h2>
+            <canvas id="userChart"></canvas>
+            <div id="userTop3" class="top3"></div>
+        </div>
 
-<script src="app.js"></script>
+        <!-- Protocols -->
+        <div class="card">
+            <h2>Protocols</h2>
+            <canvas id="protocolChart"></canvas>
+            <div id="protocolTop3" class="top3"></div>
+        </div>
+
+    </div>
+
+    <div class="card search-card">
+
+        <h2>Search</h2>
+
+        <input id="searchInput" type="text" placeholder="Search..." />
+
+        <div class="search-buttons">
+            <button onclick="search('process')">Process</button>
+            <button onclick="search('user')">User</button>
+        </div>
+
+        <div id="searchResults"></div>
+
+    </div>
+
+    <!-- Your JS -->
+    <script src="app.js"></script>
+
 </body>
 </html>

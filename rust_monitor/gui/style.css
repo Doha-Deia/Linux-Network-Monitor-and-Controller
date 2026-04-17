@@ -1,15 +1,193 @@
 body {
-  font-family: Arial;
+  font-family: Arial, sans-serif;
+  background: #f5f7fb;
+  margin: 0;
   padding: 20px;
+  color: #333;
 }
 
-table {
+h1 {
+  margin-bottom: 20px;
+}
+
+.dashboard {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+  gap: 20px;
+}
+
+.card {
+  background: white;
+  padding: 15px;
+  border-radius: 10px;
+  box-shadow: 0 2px 10px rgba(0,0,0,0.08);
+}
+
+canvas {
+  width: 100% !important;
+  height: 300px !important;
+}
+
+.top3 {
+  margin-top: 15px;
+}
+
+.top3 table {
+  width: 100%;
   border-collapse: collapse;
-  width: 60%;
-  margin-bottom: 30px;
+  font-size: 14px;
 }
 
-td, th {
-  border: 1px solid #ccc;
+.top3 th {
+  text-align: left;
+  background: #2f3b52;
+  color: white;
   padding: 8px;
+}
+
+.top3 td {
+  padding: 8px;
+  border-bottom: 1px solid #eee;
+}
+
+.search-card input {
+  width: 70%;
+  padding: 8px;
+  margin-right: 10px;
+}
+
+.search-card button {
+  padding: 8px 12px;
+  cursor: pointer;
+}
+
+#searchResults table {
+  width: 100%;
+  border-collapse: separate;
+  border-spacing: 0 10px; /* space between rows */
+  margin-top: 10px;
+}
+
+#searchResults th,
+#searchResults td {
+  padding: 14px 20px;  /* 🔥 more spacing inside columns */
+  text-align: left;
+}
+
+#searchResults th {
+  background: #2f3b52;
+  color: white;
+}
+
+#searchResults td {
+  background: white;
+}
+
+/* visual separation between columns */
+#searchResults td:not(:last-child),
+#searchResults th:not(:last-child) {
+  border-right: 1px solid #f0f0f0;
+}
+
+/* hover effect */
+#searchResults tr:hover td {
+  background: #f3f6ff;
+}
+
+.search-buttons {
+  margin-top: 10px;
+}
+
+.search-buttons button {
+  margin-right: 8px;
+  padding: 8px 12px;
+  cursor: pointer;
+}
+
+.login-body {
+    height: 100vh;
+    margin: 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+    /* colorful animated background */
+    background: linear-gradient(-45deg, #4f46e5, #06b6d4, #22c55e, #f97316);
+    background-size: 400% 400%;
+    animation: gradientBG 10s ease infinite;
+
+    font-family: Arial, sans-serif;
+}
+
+@keyframes gradientBG {
+    0% { background-position: 0% 50%; }
+    50% { background-position: 100% 50%; }
+    100% { background-position: 0% 50%; }
+}
+
+.login-card {
+    width: 340px;
+    padding: 35px;
+    border-radius: 18px;
+
+    background: rgba(255, 255, 255, 0.15);
+    backdrop-filter: blur(20px);
+
+    box-shadow: 0 15px 40px rgba(0,0,0,0.3);
+    text-align: center;
+    color: white;
+
+    transform: translateY(0);
+    transition: 0.3s ease;
+}
+
+.login-card:hover {
+    transform: translateY(-5px);
+}
+
+.title {
+    margin: 0;
+    font-size: 26px;
+    font-weight: bold;
+}
+
+.subtitle {
+    font-size: 13px;
+    opacity: 0.85;
+    margin-bottom: 20px;
+}
+
+.login-card input {
+    width: 92%;
+    padding: 12px;
+    margin: 12px 0;
+
+    border: none;
+    border-radius: 10px;
+    outline: none;
+
+    text-align: center;
+    font-size: 14px;
+}
+
+.login-card button {
+    width: 95%;
+    padding: 12px;
+
+    margin-top: 10px;
+    border: none;
+    border-radius: 10px;
+
+    background: linear-gradient(90deg, #3b82f6, #22c55e);
+    color: white;
+
+    font-weight: bold;
+    cursor: pointer;
+
+    transition: 0.3s;
+}
+
+.login-card button:hover {
+    transform: scale(1.05);
+    box-shadow: 0 8px 20px rgba(0,0,0,0.3);
 }
