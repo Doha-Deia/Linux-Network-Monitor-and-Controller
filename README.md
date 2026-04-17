@@ -44,7 +44,7 @@ The goal is to demonstrate strong knowledge in:
 
 ---
 
-## System Architecture
+## System Architecture  (need to be checked)
 
 ```text
 +---------------------------+
