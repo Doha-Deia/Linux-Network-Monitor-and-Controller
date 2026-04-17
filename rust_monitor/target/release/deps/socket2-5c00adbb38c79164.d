@@ -1,0 +1,11 @@
+/media/sf_VM_Shared/Spring'26/OS/Project/Linux-Network-Monitor-and-Controller/rust_monitor/target/release/deps/libsocket2-5c00adbb38c79164.rmeta: /home/sondos/.cargo/registry/src/index.crates.io-6f17d22bba15001f/socket2-0.6.3/src/lib.rs /home/sondos/.cargo/registry/src/index.crates.io-6f17d22bba15001f/socket2-0.6.3/src/sockaddr.rs /home/sondos/.cargo/registry/src/index.crates.io-6f17d22bba15001f/socket2-0.6.3/src/socket.rs /home/sondos/.cargo/registry/src/index.crates.io-6f17d22bba15001f/socket2-0.6.3/src/sockref.rs /home/sondos/.cargo/registry/src/index.crates.io-6f17d22bba15001f/socket2-0.6.3/src/sys/unix.rs
+
+/media/sf_VM_Shared/Spring'26/OS/Project/Linux-Network-Monitor-and-Controller/rust_monitor/target/release/deps/libsocket2-5c00adbb38c79164.rlib: /home/sondos/.cargo/registry/src/index.crates.io-6f17d22bba15001f/socket2-0.6.3/src/lib.rs /home/sondos/.cargo/registry/src/index.crates.io-6f17d22bba15001f/socket2-0.6.3/src/sockaddr.rs /home/sondos/.cargo/registry/src/index.crates.io-6f17d22bba15001f/socket2-0.6.3/src/socket.rs /home/sondos/.cargo/registry/src/index.crates.io-6f17d22bba15001f/socket2-0.6.3/src/sockref.rs /home/sondos/.cargo/registry/src/index.crates.io-6f17d22bba15001f/socket2-0.6.3/src/sys/unix.rs
+
+/media/sf_VM_Shared/Spring'26/OS/Project/Linux-Network-Monitor-and-Controller/rust_monitor/target/release/deps/socket2-5c00adbb38c79164.d: /home/sondos/.cargo/registry/src/index.crates.io-6f17d22bba15001f/socket2-0.6.3/src/lib.rs /home/sondos/.cargo/registry/src/index.crates.io-6f17d22bba15001f/socket2-0.6.3/src/sockaddr.rs /home/sondos/.cargo/registry/src/index.crates.io-6f17d22bba15001f/socket2-0.6.3/src/socket.rs /home/sondos/.cargo/registry/src/index.crates.io-6f17d22bba15001f/socket2-0.6.3/src/sockref.rs /home/sondos/.cargo/registry/src/index.crates.io-6f17d22bba15001f/socket2-0.6.3/src/sys/unix.rs
+
+/home/sondos/.cargo/registry/src/index.crates.io-6f17d22bba15001f/socket2-0.6.3/src/lib.rs:
+/home/sondos/.cargo/registry/src/index.crates.io-6f17d22bba15001f/socket2-0.6.3/src/sockaddr.rs:
+/home/sondos/.cargo/registry/src/index.crates.io-6f17d22bba15001f/socket2-0.6.3/src/socket.rs:
+/home/sondos/.cargo/registry/src/index.crates.io-6f17d22bba15001f/socket2-0.6.3/src/sockref.rs:
+/home/sondos/.cargo/registry/src/index.crates.io-6f17d22bba15001f/socket2-0.6.3/src/sys/unix.rs:

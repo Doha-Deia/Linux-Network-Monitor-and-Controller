@@ -2,7 +2,9 @@ use std::collections::BTreeMap;
 
 use crate::packet_types::ResolvedPacket;
 
-#[derive(Debug, Clone)]
+use serde::Serialize;
+
+#[derive(Serialize, Clone)]
 pub struct ProcAgg {
     pub pid: i32,
     pub process_name: String,
@@ -11,25 +13,32 @@ pub struct ProcAgg {
     pub packets: u64,
 }
 
-#[derive(Debug, Clone)]
+#[derive(Serialize, Clone)]
 pub struct UserAgg {
     pub user: String,
     pub bytes: u64,
     pub packets: u64,
 }
 
-#[derive(Debug, Clone)]
+#[derive(Serialize, Clone)]
 pub struct ProtoAgg {
     pub protocol: String,
     pub bytes: u64,
     pub packets: u64,
 }
 
-#[derive(Debug, Default)]
+#[derive(Serialize, Default)]
 pub struct Aggregator {
     process_stats: BTreeMap<i32, ProcAgg>,
     user_stats: BTreeMap<String, UserAgg>,
     protocol_stats: BTreeMap<String, ProtoAgg>,
+}
+
+#[derive(Serialize, Clone)]
+pub struct AggregationSnapshot {
+    pub processes: Vec<ProcAgg>,
+    pub users: Vec<UserAgg>,
+    pub protocols: Vec<ProtoAgg>,
 }
 
 impl Aggregator {
@@ -69,6 +78,22 @@ impl Aggregator {
 
     pub fn has_data(&self) -> bool {
         !(self.process_stats.is_empty() && self.user_stats.is_empty() && self.protocol_stats.is_empty())
+    }
+
+    pub fn snapshot(&self) -> AggregationSnapshot {
+        let mut processes: Vec<_> = self.process_stats.values().cloned().collect();
+        let mut users: Vec<_> = self.user_stats.values().cloned().collect();
+        let mut protocols: Vec<_> = self.protocol_stats.values().cloned().collect();
+
+        processes.sort_by(|a, b| b.bytes.cmp(&a.bytes));
+        users.sort_by(|a, b| b.bytes.cmp(&a.bytes));
+        protocols.sort_by(|a, b| b.bytes.cmp(&a.bytes));
+
+        AggregationSnapshot {
+            processes,
+            users,
+            protocols,
+        }
     }
 
     pub fn print_summary(&self) {

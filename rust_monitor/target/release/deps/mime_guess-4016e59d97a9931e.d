@@ -1,0 +1,12 @@
+/media/sf_VM_Shared/Spring'26/OS/Project/Linux-Network-Monitor-and-Controller/rust_monitor/target/release/deps/libmime_guess-4016e59d97a9931e.rmeta: /home/sondos/.cargo/registry/src/index.crates.io-6f17d22bba15001f/mime_guess-2.0.5/src/lib.rs /home/sondos/.cargo/registry/src/index.crates.io-6f17d22bba15001f/mime_guess-2.0.5/src/impl_bin_search.rs /home/sondos/.cargo/registry/src/index.crates.io-6f17d22bba15001f/mime_guess-2.0.5/src/mime_types.rs /media/sf_VM_Shared/Spring'26/OS/Project/Linux-Network-Monitor-and-Controller/rust_monitor/target/release/build/mime_guess-51d90031f7180ec2/out/mime_types_generated.rs
+
+/media/sf_VM_Shared/Spring'26/OS/Project/Linux-Network-Monitor-and-Controller/rust_monitor/target/release/deps/libmime_guess-4016e59d97a9931e.rlib: /home/sondos/.cargo/registry/src/index.crates.io-6f17d22bba15001f/mime_guess-2.0.5/src/lib.rs /home/sondos/.cargo/registry/src/index.crates.io-6f17d22bba15001f/mime_guess-2.0.5/src/impl_bin_search.rs /home/sondos/.cargo/registry/src/index.crates.io-6f17d22bba15001f/mime_guess-2.0.5/src/mime_types.rs /media/sf_VM_Shared/Spring'26/OS/Project/Linux-Network-Monitor-and-Controller/rust_monitor/target/release/build/mime_guess-51d90031f7180ec2/out/mime_types_generated.rs
+
+/media/sf_VM_Shared/Spring'26/OS/Project/Linux-Network-Monitor-and-Controller/rust_monitor/target/release/deps/mime_guess-4016e59d97a9931e.d: /home/sondos/.cargo/registry/src/index.crates.io-6f17d22bba15001f/mime_guess-2.0.5/src/lib.rs /home/sondos/.cargo/registry/src/index.crates.io-6f17d22bba15001f/mime_guess-2.0.5/src/impl_bin_search.rs /home/sondos/.cargo/registry/src/index.crates.io-6f17d22bba15001f/mime_guess-2.0.5/src/mime_types.rs /media/sf_VM_Shared/Spring'26/OS/Project/Linux-Network-Monitor-and-Controller/rust_monitor/target/release/build/mime_guess-51d90031f7180ec2/out/mime_types_generated.rs
+
+/home/sondos/.cargo/registry/src/index.crates.io-6f17d22bba15001f/mime_guess-2.0.5/src/lib.rs:
+/home/sondos/.cargo/registry/src/index.crates.io-6f17d22bba15001f/mime_guess-2.0.5/src/impl_bin_search.rs:
+/home/sondos/.cargo/registry/src/index.crates.io-6f17d22bba15001f/mime_guess-2.0.5/src/mime_types.rs:
+/media/sf_VM_Shared/Spring'26/OS/Project/Linux-Network-Monitor-and-Controller/rust_monitor/target/release/build/mime_guess-51d90031f7180ec2/out/mime_types_generated.rs:
+
+# env-dep:MIME_TYPES_GENERATED_PATH=/media/sf_VM_Shared/Spring'26/OS/Project/Linux-Network-Monitor-and-Controller/rust_monitor/target/release/build/mime_guess-51d90031f7180ec2/out/mime_types_generated.rs

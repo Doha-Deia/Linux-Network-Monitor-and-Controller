@@ -1,0 +1,1 @@
+cargo:rustc-env=MIME_TYPES_GENERATED_PATH=/media/sf_VM_Shared/Spring'26/OS/Project/Linux-Network-Monitor-and-Controller/rust_monitor/target/release/build/mime_guess-51d90031f7180ec2/out/mime_types_generated.rs
