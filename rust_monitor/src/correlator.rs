@@ -47,75 +47,87 @@ impl Correlator {
     }
 
     pub fn resolve(&mut self, packet: &PacketEvent) -> ResolvedPacket {
-        let tcp_map = Self::parse_proc_net("/proc/net/tcp");
-        let udp_map = Self::parse_proc_net("/proc/net/udp");
+    // 1. Parse all relevant socket tables from /proc/net
+    let tcp_map = Self::parse_proc_net("/proc/net/tcp");
+    let udp_map = Self::parse_proc_net("/proc/net/udp");
+    let raw_map = Self::parse_proc_net("/proc/net/raw"); // Required for ICMP
 
-        let sock_map = if packet.proto == 6 { &tcp_map } else { &udp_map };
-        let flow_key = Self::make_flow_key(
-            &packet.src_ip,
-            packet.src_port,
-            &packet.dst_ip,
-            packet.dst_port,
-            packet.proto,
+    // 2. Select the appropriate map based on protocol
+    let sock_map = match packet.proto {
+        6 => &tcp_map,
+        17 => &udp_map,
+        1 => &raw_map,
+        _ => &tcp_map, // Default fallback
+    };
+
+    let flow_key = Self::make_flow_key(
+        &packet.src_ip,
+        packet.src_port,
+        &packet.dst_ip,
+        packet.dst_port,
+        packet.proto,
+    );
+
+    let mut inode = 0u64;
+    let mut pid = -1i32;
+    let mut user = String::from("unknown");
+    let mut process_name = String::from("unknown");
+
+    // 3. Find the Inode: Use ports for TCP/UDP, IP-only for ICMP
+    if packet.proto == 6 || packet.proto == 17 {
+        inode = Self::find_inode(sock_map, &packet.src_ip, packet.src_port, &packet.dst_ip, packet.dst_port);
+    } else if packet.proto == 1 {
+        inode = Self::find_inode_raw(sock_map, &packet.src_ip, &packet.dst_ip);
+    }
+
+    // 4. Resolve PID and Owner if an inode was found
+    if inode != 0 {
+        if let Some(info) = sock_map.get(&inode) {
+            user = Self::get_username(info.uid);
+        }
+
+        pid = Self::find_pid_by_inode(inode);
+        if pid > 0 {
+            user = Self::get_user_for_pid(pid);
+            process_name = self.get_process_name(pid);
+        }
+
+        // Cache the result
+        self.flow_cache.insert(
+            flow_key,
+            FlowOwner {
+                inode,
+                pid,
+                uid: if let Some(i) = sock_map.get(&inode) { i.uid } else { u32::MAX },
+                user: user.clone(),
+                process_name: process_name.clone(),
+                last_seen: Self::now_secs(),
+            },
         );
+    } else if let Some(owner) = self.flow_cache.get_mut(&flow_key) {
+        // Use cached data if available
+        inode = owner.inode;
+        pid = owner.pid;
+        user = owner.user.clone();
+        process_name = owner.process_name.clone();
+        owner.last_seen = Self::now_secs();
+    }
 
-        let mut inode = 0u64;
-        let mut pid = -1i32;
-        let mut uid = u32::MAX;
-        let mut user = String::from("unknown");
-        let mut process_name = String::from("unknown");
-
-        if packet.proto == 6 || packet.proto == 17 {
-            inode = Self::find_inode(sock_map, &packet.src_ip, packet.src_port, &packet.dst_ip, packet.dst_port);
-        }
-
-        if inode != 0 {
-            if let Some(info) = sock_map.get(&inode) {
-                uid = info.uid;
-                user = Self::get_username(uid);
-            }
-
-            pid = Self::find_pid_by_inode(inode);
-            if pid > 0 {
-                user = Self::get_user_for_pid(pid);
-                process_name = self.get_process_name(pid);
-            }
-
-            self.flow_cache.insert(
-                flow_key,
-                FlowOwner {
-                    inode,
-                    pid,
-                    uid,
-                    user: user.clone(),
-                    process_name: process_name.clone(),
-                    last_seen: Self::now_secs(),
-                },
-            );
-        } else if let Some(owner) = self.flow_cache.get_mut(&flow_key) {
-            inode = owner.inode;
-            pid = owner.pid;
-            uid = owner.uid;
-            let _ = uid;
-            user = owner.user.clone();
-            process_name = owner.process_name.clone();
-            owner.last_seen = Self::now_secs();
-        }
-
-        ResolvedPacket {
-            ts: packet.ts.clone(),
-            length: packet.length,
-            src_ip: packet.src_ip.clone(),
-            src_port: packet.src_port,
-            dst_ip: packet.dst_ip.clone(),
-            dst_port: packet.dst_port,
-            proto: packet.proto,
-            protocol: packet.protocol.clone(),
-            inode,
-            pid,
-            process_name,
-            user,
-        }
+    // 5. Construct the final ResolvedPacket
+    ResolvedPacket {
+        ts: packet.ts.clone(),
+        length: packet.length,
+        src_ip: packet.src_ip.clone(),
+        src_port: packet.src_port,
+        dst_ip: packet.dst_ip.clone(),
+        dst_port: packet.dst_port,
+        proto: packet.proto,
+        protocol: packet.protocol.clone(),
+        inode,
+        pid,
+        process_name,
+        user,
+    }
     }
 
     pub fn cleanup_cache(&mut self, ttl_seconds: u64) {
@@ -334,5 +346,19 @@ impl Correlator {
         };
 
         FlowKey { ip1, port1, ip2, port2, proto }
+    }
+
+    fn find_inode_raw(
+    sock_map: &BTreeMap<u64, SockInfo>,
+    src_ip: &str,
+    dst_ip: &str,
+    ) -> u64 {
+        for (inode, sk) in sock_map {
+            // Raw sockets (ICMP) match if the local IP is the sender, receiver, or 0.0.0.0
+            if sk.local_ip == src_ip || sk.local_ip == dst_ip || sk.local_ip == "0.0.0.0" {
+                return *inode;
+            }
+        }
+        0
     }
 }
