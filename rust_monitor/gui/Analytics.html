@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Analytics — NetMonitor</title>
+    <link rel="stylesheet" href="style.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+
+<div class="page-header">
+    <h1>Analytics</h1>
+    <p>Traffic breakdowns by process, user, and protocol — refreshed every second</p>
+</div>
+
+<!-- Charts row -->
+<div class="three-col" style="margin-bottom: 22px;">
+
+    <div class="card">
+        <div class="card-title">By Process</div>
+        <div class="chart-canvas-wrap">
+            <canvas id="processChart"></canvas>
+        </div>
+        <div id="processTop"></div>
+    </div>
+
+    <div class="card">
+        <div class="card-title">By User</div>
+        <div class="chart-canvas-wrap">
+            <canvas id="userChart"></canvas>
+        </div>
+        <div id="userTop"></div>
+    </div>
+
+    <div class="card">
+        <div class="card-title">By Protocol</div>
+        <div class="chart-canvas-wrap">
+            <canvas id="protocolChart"></canvas>
+        </div>
+        <div id="protocolTop"></div>
+    </div>
+
+</div>
+
+<!-- Full process table -->
+<div class="card">
+    <div class="card-title">All Processes</div>
+    <div class="results-table-wrap">
+        <table class="results-table" id="allProcsTable">
+            <thead>
+                <tr>
+                    <th>Process</th>
+                    <th>PID</th>
+                    <th>User</th>
+                    <th>Bytes</th>
+                    <th>Packets</th>
+                </tr>
+            </thead>
+            <tbody id="allProcsBody">
+                <tr><td colspan="5" class="no-results">Loading…</td></tr>
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<script src="shared.js"></script>
+<script src="analytics.js"></script>
+
+</body>
+</html>

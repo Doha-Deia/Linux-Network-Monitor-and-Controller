@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Search — NetMonitor</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<div class="page-header">
+    <h1>Search &amp; Filter</h1>
+    <p>Query captured traffic by process, user, or protocol with live results</p>
+</div>
+
+<div class="card">
+
+    <!-- Search bar -->
+    <div class="search-bar">
+        <input type="text" id="searchInput" placeholder="Search by process name, user, or PID…" autocomplete="off" />
+        <select id="searchField">
+            <option value="all">All fields</option>
+            <option value="process_name">Process name</option>
+            <option value="user">User</option>
+            <option value="pid">PID</option>
+        </select>
+        <button class="btn btn-primary" onclick="runSearch()">Search</button>
+        <button class="btn btn-ghost" onclick="clearSearch()">Clear</button>
+    </div>
+
+    <!-- Filters -->
+    <div class="filter-row">
+        <label>Protocol</label>
+        <div class="proto-pill">
+            <button class="pill-btn active-all" data-proto="all"  onclick="setProto('all')">All</button>
+            <button class="pill-btn"            data-proto="TCP"  onclick="setProto('TCP')">TCP</button>
+            <button class="pill-btn"            data-proto="UDP"  onclick="setProto('UDP')">UDP</button>
+            <button class="pill-btn"            data-proto="ICMP" onclick="setProto('ICMP')">ICMP</button>
+        </div>
+
+        <label style="margin-left:16px">Sort by</label>
+        <select id="sortField" onchange="runSearch()">
+            <option value="bytes">Bytes (↓)</option>
+            <option value="packets">Packets (↓)</option>
+            <option value="process_name">Process (A-Z)</option>
+            <option value="user">User (A-Z)</option>
+        </select>
+
+        <div class="min-bytes-wrap" style="margin-left:auto">
+            <label for="minBytes">Min bytes</label>
+            <input type="number" id="minBytes" placeholder="0" min="0" oninput="runSearch()" />
+        </div>
+    </div>
+
+    <!-- Results -->
+    <div class="results-meta" id="resultsMeta"></div>
+
+    <div class="results-table-wrap">
+        <table class="results-table">
+            <thead>
+                <tr>
+                    <th onclick="toggleSort('process_name')" id="th-process_name">Process</th>
+                    <th onclick="toggleSort('pid')"          id="th-pid">PID</th>
+                    <th onclick="toggleSort('user')"         id="th-user">User</th>
+                    <th onclick="toggleSort('bytes')"        id="th-bytes" class="sort-desc">Bytes</th>
+                    <th onclick="toggleSort('packets')"      id="th-packets">Packets</th>
+                </tr>
+            </thead>
+            <tbody id="searchBody">
+                <tr><td colspan="5" class="no-results">
+                    <strong>Start searching</strong>
+                    Type a query above, or leave it blank and click Search to see all processes
+                </td></tr>
+            </tbody>
+        </table>
+    </div>
+
+</div>
+
+<script src="app.js"></script>
+<script src="search.js"></script>
+
+</body>
+</html>

@@ -3,60 +3,74 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Network Monitor Dashboard</title>
-
+    <title>Overview — NetMonitor</title>
     <link rel="stylesheet" href="style.css">
-
-    <!-- Chart.js -->
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
-
 <body>
 
-    <h1>Network Monitor Dashboard</h1>
+<div class="page-header">
+    <h1>Overview</h1>
+    <p>Live snapshot of network activity on this machine</p>
+</div>
 
-    <div class="dashboard">
-
-        <!-- Processes -->
-        <div class="card">
-            <h2>Processes</h2>
-            <canvas id="processChart"></canvas>
-            <div id="processTop3" class="top3"></div>
-        </div>
-
-        <!-- Users -->
-        <div class="card">
-            <h2>Users</h2>
-            <canvas id="userChart"></canvas>
-            <div id="userTop3" class="top3"></div>
-        </div>
-
-        <!-- Protocols -->
-        <div class="card">
-            <h2>Protocols</h2>
-            <canvas id="protocolChart"></canvas>
-            <div id="protocolTop3" class="top3"></div>
-        </div>
-
+<!-- Stat summary cards -->
+<div class="stat-grid" id="statGrid">
+    <div class="stat-card">
+        <div class="stat-label">Total Bytes</div>
+        <div class="stat-value" id="statBytes">—</div>
+        <div class="stat-sub">since capture start</div>
     </div>
-
-    <div class="card search-card">
-
-        <h2>Search</h2>
-
-        <input id="searchInput" type="text" placeholder="Search..." />
-
-        <div class="search-buttons">
-            <button onclick="search('process')">Process</button>
-            <button onclick="search('user')">User</button>
-        </div>
-
-        <div id="searchResults"></div>
-
+    <div class="stat-card">
+        <div class="stat-label">Total Packets</div>
+        <div class="stat-value" id="statPackets">—</div>
+        <div class="stat-sub">across all processes</div>
     </div>
+    <div class="stat-card">
+        <div class="stat-label">Active Processes</div>
+        <div class="stat-value" id="statProcs">—</div>
+        <div class="stat-sub">sending or receiving</div>
+    </div>
+    <div class="stat-card">
+        <div class="stat-label">Users</div>
+        <div class="stat-value" id="statUsers">—</div>
+        <div class="stat-sub">with network activity</div>
+    </div>
+    <div class="stat-card">
+        <div class="stat-label">Top Protocol</div>
+        <div class="stat-value" id="statTopProto">—</div>
+        <div class="stat-sub" id="statTopProtoPct">by traffic volume</div>
+    </div>
+</div>
 
-    <!-- Your JS -->
-    <script src="app.js"></script>
+<!-- Traffic flow visualization -->
+<div class="card flow-wrap">
+    <div class="flow-header">
+        <span class="card-title">Traffic Flow</span>
+        <div class="flow-legend">
+            <span class="legend-item"><span class="legend-dot tcp"></span>TCP</span>
+            <span class="legend-item"><span class="legend-dot udp"></span>UDP</span>
+            <span class="legend-item"><span class="legend-dot icmp"></span>ICMP</span>
+            <span class="legend-item"><span class="legend-dot other"></span>Other</span>
+        </div>
+    </div>
+    <canvas id="flowCanvas"></canvas>
+    <p class="flow-hint">Node size reflects traffic volume · Particles animate packet flow between processes</p>
+</div>
+
+<!-- Top tables side by side -->
+<div class="two-col">
+    <div class="card">
+        <div class="card-title">Top Processes</div>
+        <div id="topProcsTable"></div>
+    </div>
+    <div class="card">
+        <div class="card-title">Top Users</div>
+        <div id="topUsersTable"></div>
+    </div>
+</div>
+
+<script src="shared.js"></script>
+<script src="overview.js"></script>
 
 </body>
 </html>
